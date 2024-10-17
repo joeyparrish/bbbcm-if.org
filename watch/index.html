@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--
+BBBCM-IF content is licensed under Creative Commons 4.0 Attribution.
+See CC-BY-4.0 for details.
+-->
+<html lang="en">
+  <head>
+    <title>BBBCM-IF: The Movie</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Big Buck Bunny: The Dark Truths">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://ajax.googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com">
+    <link rel="preconnect" href="https://storage.googleapis.com">
+
+    <!-- Shaka Player UI compiled library: -->
+<!-- TODO: unfork after https://github.com/shaka-project/shaka-player/pull/7430 and a new release
+    <script src="https://ajax.googleapis.com/ajax/libs/shaka-player/4.11.4/shaka-player.ui.js"></script>
+-->
+    <script src="shaka-player.ui.js"></script>
+    <!-- Shaka Player UI compiled library default CSS: -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/shaka-player/4.11.4/controls.css">
+    <!-- Chromecast support: -->
+    <script defer src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
+
+    <style>
+
+html, body {
+  padding: 0;
+  margin: 0;
+  background: black;
+}
+
+#container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+/* Sindarin language support */
+@font-face {
+  font-family: TengwarTelcontar;
+  src: url("https://raw.githubusercontent.com/shaka-project/shaka-player/refs/heads/main/demo/TengwarTelcontar.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+    </style>
+    <script>
+
+document.addEventListener('shaka-ui-loaded', () => {
+  // Take the UI language from the URL's lang= parameter.
+  const params = new URLSearchParams(location.search);
+  const requestedLanguage = params.get('lang');
+
+  const languages = [];
+  if (requestedLanguage) {
+    languages.push(requestedLanguage);
+  }
+
+  // Fall back to browser-configure languages.
+  languages.push(...navigator.languages);
+
+  const localization = video.ui.getControls().getLocalization();
+
+  // Lazy-load UI translations if needed.
+  localization.addEventListener('unknown-locales', async (event) => {
+    for (const locale of event.locales) {
+      const response = await fetch(`https://raw.githubusercontent.com/shaka-project/shaka-player/refs/heads/main/ui/locales/${locale}.json`);
+      const translations = await response.json();
+      const translation_map = new Map(Object.entries(translations));
+      localization.insert(locale, translation_map);
+    }
+  });
+
+  localization.changeLocale(languages);
+});
+
+    </script>
+  </head>
+  <body>
+    <div id="container">
+      <!-- The data-shaka-player-container tag will make the UI library place the controls in this div.
+           The data-shaka-player-cast-receiver-id tag allows you to provide a Cast Application ID that
+             the cast button will cast to; the value provided here is the sample cast receiver. -->
+      <div data-shaka-player-container
+           data-shaka-player-cast-receiver-id="07AEE832">
+         <!-- The data-shaka-player tag will make the UI library use this video element.
+              If no video is provided, the UI will automatically make one inside the container div. -->
+        <video autoplay data-shaka-player id="video">
+          <source src="https://storage.googleapis.com/shaka-demo-assets/bbb-dark-truths-hls/hls.m3u8" />
+        </video>
+      </div>
+    </div>
+  </body>
+</html>
