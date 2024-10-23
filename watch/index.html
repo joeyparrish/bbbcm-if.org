@@ -65,7 +65,7 @@ document.addEventListener('shaka-ui-loaded', () => {
     languages.push(requestedLanguage);
   }
 
-  // Fall back to browser-configure languages.
+  // Fall back to browser-configured languages.
   languages.push(...navigator.languages);
 
   const localization = video.ui.getControls().getLocalization();
